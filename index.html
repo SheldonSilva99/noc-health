@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>NOC Health — Cuidado e Bem-Estar</title>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --primary: #0fa878;
+      --primary-mid: #0d9469;
+      --primary-dark: #09795a;
+      --primary-glow: rgba(15,168,120,0.18);
+      --primary-light: #e6faf4;
+      --bg: #f2f6f4;
+      --bg-gradient: linear-gradient(160deg,#e6f2ec 0%,#f2f6f4 55%);
+      --bg-card: rgba(255,255,255,0.9);
+      --bg-card-solid: #ffffff;
+      --text-main: #0c1c17;
+      --text-secondary: #3d6052;
+      --text-hint: #7fa090;
+      --danger: #e53e3e;
+      --danger-mid: #c53030;
+      --danger-light: #fff5f5;
+      --danger-glow: rgba(229,62,62,0.15);
+      --warning: #c47700;
+      --warning-light: #fffbeb;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --border-card: rgba(0,0,0,0.06);
+      --shadow-sm: 0 1px 4px rgba(0,0,0,0.05),0 2px 8px rgba(0,0,0,0.03);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.07),0 1px 4px rgba(0,0,0,0.04);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.11),0 2px 8px rgba(0,0,0,0.05);
+      --radius-sm: 10px;
+      --radius: 18px;
+      --radius-lg: 22px;
+      --radius-xl: 30px;
+      --nav-bg: rgba(255,255,255,0.96);
+      --nav-border: rgba(0,0,0,0.06);
+      --font-display: 'Outfit',sans-serif;
+      --font-body: 'DM Sans',sans-serif;
+    }
+
+    body.dark-mode {
+      --bg: #091410;
+      --bg-gradient: linear-gradient(160deg,#0c1c17 0%,#091410 55%);
+      --bg-card: rgba(16,32,24,0.9);
+      --bg-card-solid: #101e18;
+      --text-main: #e4f2ec;
+      --text-secondary: #6aaa8a;
+      --text-hint: #3d6050;
+      --primary: #13d495;
+      --primary-mid: #0fa878;
+      --primary-dark: #0d9469;
+      --primary-glow: rgba(19,212,149,0.14);
+      --primary-light: #0a2618;
+      --danger-light: #1a0808;
+      --warning-light: #160f00;
+      --success-light: #041a0e;
+      --border-card: rgba(255,255,255,0.05);
+      --shadow-sm: 0 1px 4px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+      --nav-bg: rgba(9,20,16,0.97);
+      --nav-border: rgba(255,255,255,0.05);
+    }
+
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+    html { font-size:17px; scroll-behavior:smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      transition: background 0.4s,color 0.4s;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background: var(--bg-gradient);
+      z-index:-2; pointer-events:none;
+    }
+
+    body::after {
+      content:'';
+      position:fixed; top:-100px; right:-100px;
+      width:380px; height:380px;
+      background: radial-gradient(circle,rgba(15,168,120,0.1) 0%,transparent 68%);
+      z-index:-1; pointer-events:none;
+    }
+
+    #app {
+      max-width:600px; margin:0 auto;
+      padding:16px 16px 110px;
+      min-height:100vh;
+    }
+
+    .page { display:none; }
+    .page.active { display:block; animation:pageIn 0.32s cubic-bezier(0.16,1,0.3,1); }
+
+    @keyframes pageIn {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .page-header {
+      display:flex; align-items:center; gap:14px; padding:24px 0 18px;
+    }
+
+    .page-header h2 {
+      font-family:var(--font-display); font-size:1.3rem; font-weight:700;
+      color:var(--text-main); flex:1; letter-spacing:-0.3px;
+    }
+
+    .home-header { justify-content:space-between; padding-top:28px; }
+
+    .logo-area { display:flex; align-items:center; gap:13px; }
+
+    .logo-icon {
+      width:48px; height:48px;
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      border-radius:15px; display:flex; align-items:center; justify-content:center;
+      font-size:1.55rem;
+      box-shadow:0 4px 18px var(--primary-glow),0 2px 6px rgba(0,0,0,0.12);
+      flex-shrink:0;
+    }
+
+    .logo-title {
+      font-family:var(--font-display); font-size:1.55rem; font-weight:900;
+      color:var(--primary); letter-spacing:-0.8px; line-height:1;
+    }
+
+    .logo-sub {
+      font-size:0.68rem; color:var(--text-hint); font-weight:500;
+      letter-spacing:0.6px; text-transform:uppercase; margin-top:3px;
+    }
+
+    #dark-toggle {
+      background:var(--bg-card); border:1px solid var(--border-card); border-radius:50%;
+      width:44px; height:44px; font-size:1.1rem; cursor:pointer;
+      transition:all 0.25s; display:flex; align-items:center; justify-content:center;
+      box-shadow:var(--shadow-sm); backdrop-filter:blur(10px); flex-shrink:0;
+    }
+
+    #dark-toggle:hover { transform:scale(1.1) rotate(20deg); }
+
+    .card {
+      background:var(--bg-card); border-radius:var(--radius-lg); padding:22px;
+      margin-bottom:14px; box-shadow:var(--shadow-md); border:1px solid var(--border-card);
+      backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    }
+
+    .card h3 {
+      font-family:var(--font-display); font-size:1.02rem; font-weight:700;
+      margin-bottom:16px; color:var(--text-main); letter-spacing:-0.2px;
+    }
+
+    .welcome-card {
+      background:linear-gradient(135deg,var(--primary) 0%,#077a55 100%);
+      border:none; color:white; position:relative; overflow:hidden; padding:28px 22px 24px;
+    }
+
+    .welcome-card::before {
+      content:'';
+      position:absolute; top:-50px; right:-30px;
+      width:180px; height:180px; background:rgba(255,255,255,0.07); border-radius:50%;
+    }
+
+    .welcome-card::after {
+      content:'';
+      position:absolute; bottom:-40px; right:50px;
+      width:110px; height:110px; background:rgba(255,255,255,0.05); border-radius:50%;
+    }
+
+    .welcome-greeting { font-size:0.85rem; font-weight:500; opacity:0.8; margin-bottom:5px; }
+
+    .welcome-name {
+      font-family:var(--font-display); font-size:1.55rem; font-weight:800;
+      margin-bottom:7px; letter-spacing:-0.5px; line-height:1.2;
+    }
+
+    .welcome-date { font-size:0.78rem; opacity:0.65; font-weight:500; text-transform:capitalize; }
+
+    .status-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+
+    .status-item {
+      background:var(--bg); border-radius:var(--radius); padding:16px 10px;
+      text-align:center; border:1px solid transparent; transition:all 0.25s;
+    }
+
+    .status-item.ok { border-color:rgba(5,150,105,0.22); background:var(--success-light); }
+    .status-item.alert { border-color:rgba(229,62,62,0.22); background:var(--danger-light); }
+    .status-item.warn { border-color:rgba(196,119,0,0.22); background:var(--warning-light); }
+
+    .status-icon { font-size:1.6rem; display:block; margin-bottom:5px; }
+    .status-label { font-size:0.66rem; color:var(--text-hint); display:block; font-weight:600; letter-spacing:0.6px; text-transform:uppercase; }
+    .status-val { font-family:var(--font-display); font-size:0.9rem; font-weight:700; display:block; margin-top:4px; color:var(--text-main); }
+
+    .tudo-certo {
+      background:linear-gradient(90deg,var(--success-light),var(--primary-light));
+      color:var(--success); border:1px solid rgba(5,150,105,0.2);
+      border-radius:10px; padding:12px 16px; font-weight:600; font-size:0.88rem; text-align:center;
+    }
+
+    .section-title {
+      font-family:var(--font-display); font-size:1rem; font-weight:700;
+      margin:4px 0 12px; color:var(--text-main); letter-spacing:-0.2px;
+    }
+
+    .shortcuts-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+
+    .shortcut-card {
+      background:var(--bg-card); border:1px solid var(--border-card); border-radius:var(--radius);
+      padding:22px 12px 18px; text-align:center; cursor:pointer;
+      transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+      font-family:var(--font-body); box-shadow:var(--shadow-sm);
+      position:relative; overflow:hidden; backdrop-filter:blur(10px);
+    }
+
+    .shortcut-card::before {
+      content:'';
+      position:absolute; inset:0;
+      background:linear-gradient(135deg,var(--primary-glow),transparent);
+      opacity:0; transition:opacity 0.2s;
+    }
+
+    .shortcut-card:hover::before,.shortcut-card:active::before { opacity:1; }
+
+    .shortcut-card:hover {
+      border-color:var(--primary); transform:translateY(-3px) scale(1.01);
+      box-shadow:var(--shadow-md),0 0 0 1px var(--primary);
+    }
+
+    .shortcut-card:active { transform:scale(0.97); }
+    .shortcut-card span { font-size:1.85rem; display:block; margin-bottom:9px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.08)); }
+    .shortcut-card p { font-size:0.8rem; font-weight:600; color:var(--text-secondary); line-height:1.3; }
+
+    .field-label {
+      display:block; font-size:0.75rem; font-weight:600; color:var(--text-hint);
+      margin-bottom:7px; margin-top:18px; letter-spacing:0.6px; text-transform:uppercase;
+    }
+
+    .field-label:first-of-type { margin-top:0; }
+
+    .field-input {
+      width:100%; padding:14px 16px; font-size:0.97rem; font-family:var(--font-body);
+      font-weight:500; background:var(--bg); border:1.5px solid var(--border-card);
+      border-radius:var(--radius-sm); color:var(--text-main);
+      transition:border-color 0.2s,box-shadow 0.2s,background 0.2s;
+      outline:none; display:block; -webkit-appearance:none;
+    }
+
+    .field-input:focus {
+      border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-glow);
+      background:var(--bg-card-solid);
+    }
+
+    .field-input::placeholder { color:var(--text-hint); font-weight:400; }
+    textarea.field-input { min-height:88px; resize:vertical; line-height:1.5; }
+
+    .big-input {
+      font-family:var(--font-display); font-size:2.6rem; font-weight:800;
+      text-align:center; padding:20px; letter-spacing:-1.5px; color:var(--primary);
+    }
+
+    .btn-primary {
+      width:100%; padding:16px;
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      color:white; border:none; border-radius:var(--radius-sm);
+      font-size:0.97rem; font-family:var(--font-display); font-weight:700;
+      cursor:pointer; margin-top:20px; transition:all 0.22s; letter-spacing:0.2px;
+      box-shadow:0 4px 18px var(--primary-glow),0 2px 6px rgba(0,0,0,0.1);
+      position:relative; overflow:hidden;
+    }
+
+    .btn-primary::after { content:''; position:absolute; inset:0; background:linear-gradient(rgba(255,255,255,0.12),transparent); }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 26px var(--primary-glow),0 4px 12px rgba(0,0,0,0.14); }
+    .btn-primary:active { transform:scale(0.98); }
+
+    .btn-secondary {
+      width:100%; padding:14px;
+      background:var(--bg-card-solid); color:var(--text-main);
+      border:1.5px solid var(--border-card); border-radius:var(--radius-sm);
+      font-size:0.95rem; font-family:var(--font-display); font-weight:700;
+      cursor:pointer; transition:all 0.22s; letter-spacing:0.2px;
+      box-shadow:var(--shadow-sm);
+      margin-top:10px;
+    }
+
+    .btn-secondary:hover { border-color:var(--primary); color:var(--primary); }
+
+    .btn-danger {
+      width:100%; padding:14px;
+      background:linear-gradient(135deg,var(--danger),var(--danger-mid));
+      color:white; border:none; border-radius:var(--radius-sm);
+      font-size:0.92rem; font-family:var(--font-display); font-weight:700;
+      cursor:pointer; transition:all 0.2s; box-shadow:0 4px 14px var(--danger-glow);
+    }
+
+    .btn-danger:hover { transform:translateY(-1px); opacity:0.92; }
+
+    .back-btn {
+      background:var(--bg-card); border:1px solid var(--border-card); border-radius:50px;
+      padding:10px 18px; font-size:0.82rem; font-family:var(--font-display); font-weight:600;
+      cursor:pointer; color:var(--text-secondary); white-space:nowrap; transition:all 0.2s;
+      box-shadow:var(--shadow-sm); backdrop-filter:blur(10px);
+    }
+
+    .back-btn:hover { border-color:var(--primary); color:var(--primary); transform:translateX(-2px); }
+
+    #emergency-btn {
+      position:fixed; bottom:92px; right:16px; z-index:1000;
+      background:linear-gradient(135deg,#ff3b30,#c0392b);
+      color:white; border:none; border-radius:50px; padding:13px 22px;
+      font-size:0.92rem; font-family:var(--font-display); font-weight:800;
+      cursor:pointer; letter-spacing:1.5px;
+      box-shadow:0 4px 22px rgba(255,59,48,0.5),0 2px 8px rgba(0,0,0,0.2);
+      animation:sos-pulse 2.5s infinite;
+    }
+
+    @keyframes sos-pulse {
+      0%,100% { box-shadow:0 4px 22px rgba(255,59,48,0.5),0 2px 8px rgba(0,0,0,0.2); transform:scale(1); }
+      50% { box-shadow:0 6px 30px rgba(255,59,48,0.72),0 2px 10px rgba(0,0,0,0.25); transform:scale(1.04); }
+    }
+
+    #bottom-nav {
+      position:fixed; bottom:0; left:0; right:0; z-index:999;
+      background:var(--nav-bg); border-top:1px solid var(--nav-border);
+      display:flex; justify-content:space-around; padding:8px 0 14px;
+      backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px);
+    }
+
+    .nav-btn {
+      display:flex; flex-direction:column; align-items:center; gap:3px;
+      background:none; border:none; padding:7px 12px; cursor:pointer;
+      border-radius:12px; transition:all 0.2s; color:var(--text-hint);
+      font-family:var(--font-body); position:relative;
+    }
+
+    .nav-btn span { font-size:1.3rem; transition:transform 0.2s; }
+    .nav-btn small { font-size:0.6rem; font-weight:600; letter-spacing:0.3px; }
+    .nav-btn:hover { color:var(--primary); }
+    .nav-btn:hover span { transform:translateY(-2px); }
+    .nav-btn.active { color:var(--primary); }
+    .nav-btn.active span { transform:translateY(-1px); }
+
+    .nav-btn.active::after {
+      content:''; position:absolute; bottom:-8px; left:50%;
+      transform:translateX(-50%); width:4px; height:4px;
+      background:var(--primary); border-radius:50%;
+    }
+
+    .popup-overlay {
+      position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,0.5);
+      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      align-items:center; justify-content:center; padding:24px;
+      animation:overlayIn 0.2s ease;
+      display:none;
+    }
+
+    .popup-overlay.active { display:flex; }
+
+    @keyframes overlayIn { from{opacity:0;} to{opacity:1;} }
+
+    .popup-box {
+      background:var(--bg-card-solid); border-radius:var(--radius-xl);
+      padding:36px 28px 28px; max-width:360px; width:100%; text-align:center;
+      box-shadow:var(--shadow-lg); border:1px solid var(--border-card);
+      animation:popIn 0.32s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    @keyframes popIn {
+      from{transform:scale(0.88) translateY(24px);opacity:0;}
+      to{transform:scale(1) translateY(0);opacity:1;}
+    }
+
+    .popup-icon { font-size:3rem; margin-bottom:14px; display:block; filter:drop-shadow(0 4px 8px rgba(0,0,0,0.12)); }
+    .sms-links { display:flex; flex-direction:column; gap:10px; margin:14px 0 8px; }
+    .sms-btn { text-decoration:none; display:block; text-align:center; }
+    .popup-box h2 { font-family:var(--font-display); font-size:1.25rem; font-weight:800; margin-bottom:10px; letter-spacing:-0.3px; }
+    .popup-box p { font-size:0.92rem; color:var(--text-secondary); margin-bottom:22px; line-height:1.6; white-space:pre-line; }
+
+    .tabs { display:flex; gap:7px; margin-bottom:14px; overflow-x:auto; padding-bottom:4px; -ms-overflow-style:none; scrollbar-width:none; }
+    .tabs::-webkit-scrollbar { display:none; }
+
+    .tab-btn {
+      padding:9px 18px; border:1px solid var(--border-card); border-radius:50px;
+      background:var(--bg-card); font-size:0.8rem; font-family:var(--font-display);
+      font-weight:600; cursor:pointer; white-space:nowrap; color:var(--text-secondary);
+      transition:all 0.2s; backdrop-filter:blur(10px);
+    }
+
+    .tab-btn:hover { border-color:var(--primary); color:var(--primary); }
+
+    .tab-btn.active {
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      border-color:transparent; color:white; box-shadow:0 3px 14px var(--primary-glow);
+    }
+
+    .status-badge {
+      padding:12px 16px; border-radius:var(--radius-sm); font-weight:600; font-size:0.88rem;
+      margin-bottom:14px; border-left:3px solid transparent;
+    }
+
+    .status-badge.ok { background:var(--success-light); color:var(--success); border-left-color:var(--success); }
+    .status-badge.alert { background:var(--danger-light); color:var(--danger); border-left-color:var(--danger); }
+
+    .humor-selector { display:flex; gap:7px; margin-bottom:6px; }
+
+    .humor-btn {
+      flex:1; padding:12px 4px; background:var(--bg); border:1.5px solid var(--border-card);
+      border-radius:var(--radius-sm); font-size:1.45rem; cursor:pointer;
+      font-family:var(--font-body); transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1); text-align:center;
+    }
+
+    .humor-btn small { display:block; font-size:0.6rem; font-weight:600; color:var(--text-hint); margin-top:3px; }
+    .humor-btn:hover { transform:scale(1.07); border-color:var(--primary); }
+    .humor-btn.selected { border-color:var(--primary); background:var(--primary-light); transform:scale(1.08); box-shadow:0 0 0 2px var(--primary-glow); }
+
+    .loc-display {
+      background:var(--bg); border:1px solid var(--border-card); border-radius:var(--radius-sm);
+      padding:14px 16px; font-weight:500; font-size:0.86rem; margin-bottom:16px; color:var(--text-main); line-height:1.7;
+    }
+
+    .history-item {
+      padding:14px; border-radius:var(--radius-sm); margin-bottom:10px;
+      border-left:3px solid var(--border-card); background:var(--bg); transition:background 0.2s; line-height:1.5;
+    }
+
+    .history-item:last-child { margin-bottom:0; }
+
+    .hint-text { font-size:0.82rem; color:var(--text-hint); line-height:1.55; margin-bottom:10px; }
+    .center-text { text-align:center; }
+    .hidden { display:none !important; }
+
+    @media (max-width:380px) {
+      html { font-size:15px; }
+      .shortcuts-grid { gap:8px; }
+      .humor-selector { gap:5px; }
+      .big-input { font-size:2rem; }
+      .welcome-name { font-size:1.35rem; }
+    }
+
+    @media (min-width:600px) {
+      #app { padding-top:28px; }
+      #emergency-btn { right:calc(50% - 284px); }
+      .card { padding:26px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="global-popup" class="popup-overlay">
+    <div class="popup-box">
+      <div id="popup-icon" class="popup-icon">⚠️</div>
+      <h2 id="popup-title">Alerta</h2>
+      <p id="popup-message">Mensagem aqui.</p>
+      <div id="sms-links" class="sms-links"></div>
+      <button onclick="closePopup()" class="btn-primary">OK, Entendi</button>
+    </div>
+  </div>
+
+  <button id="emergency-btn" onclick="triggerEmergency()" title="Emergência SOS">
+    🆘 SOS
+  </button>
+
+  <nav id="bottom-nav">
+    <button onclick="showPage('home')" class="nav-btn nav-item active" id="nav-home">
+      <span>🏠</span><small>Início</small>
+    </button>
+    <button onclick="showPage('cadastro')" class="nav-btn nav-item" id="nav-cadastro">
+      <span>👤</span><small>Cadastro</small>
+    </button>
+    <button onclick="showPage('remedios')" class="nav-btn nav-item" id="nav-remedios">
+      <span>💊</span><small>Remédios</small>
+    </button>
+    <button onclick="showPage('saude')" class="nav-btn nav-item" id="nav-saude">
+      <span>❤️</span><small>Saúde</small>
+    </button>
+    <button onclick="showPage('historico')" class="nav-btn nav-item" id="nav-historico">
+      <span>📋</span><small>Histórico</small>
+    </button>
+  </nav>
+
+  <main id="app">
+
+    <section id="page-home" class="page active">
+      <header class="page-header home-header">
+        <div class="logo-area">
+          <div class="logo-icon">💚</div>
+          <div>
+            <h1 class="logo-title">NOC Health</h1>
+            <p class="logo-sub">Cuidado e Bem-Estar</p>
+          </div>
+        </div>
+        <button onclick="toggleDarkMode()" id="dark-toggle" title="Alternar tema">🌙</button>
+      </header>
+
+      <div class="card welcome-card">
+        <p class="welcome-greeting" id="greeting-text">BOM DIA</p>
+        <p class="welcome-name" id="welcome-name">Bem-vindo ao NOC Health</p>
+        <p class="welcome-date" id="today-date"></p>
+      </div>
+
+      <div class="card status-card">
+        <h3>📊 Resumo de Hoje</h3>
+        <div class="status-grid">
+          <div class="status-item" id="status-pressao">
+            <span class="status-icon">💉</span>
+            <span class="status-label">Pressão</span>
+            <span class="status-val" id="st-pressao">—</span>
+          </div>
+          <div class="status-item" id="status-glicemia">
+            <span class="status-icon">🩸</span>
+            <span class="status-label">Glicemia</span>
+            <span class="status-val" id="st-glicemia">—</span>
+          </div>
+          <div class="status-item" id="status-remedio">
+            <span class="status-icon">💊</span>
+            <span class="status-label">Remédios</span>
+            <span class="status-val" id="st-remedio">—</span>
+          </div>
+          <div class="status-item" id="status-humor">
+            <span class="status-icon">😊</span>
+            <span class="status-label">Humor</span>
+            <span class="status-val" id="st-humor">—</span>
+          </div>
+        </div>
+        <div id="tudo-certo-msg" class="tudo-certo hidden">
+          ✅ Tudo certo! Todos os dados de hoje estão normais.
+        </div>
+      </div>
+
+      <h3 class="section-title">⚡ Atalhos Rápidos</h3>
+      <div class="shortcuts-grid">
+        <button class="shortcut-card" onclick="showPage('pressao')">
+          <span>💉</span><p>Registrar Pressão</p>
+        </button>
+        <button class="shortcut-card" onclick="showPage('glicemia')">
+          <span>🩸</span><p>Registrar Glicemia</p>
+        </button>
+        <button class="shortcut-card" onclick="showPage('remedios')">
+          <span>💊</span><p>Meus Remédios</p>
+        </button>
+        <button class="shortcut-card" onclick="showPage('diario')">
+          <span>📝</span><p>Diário de Saúde</p>
+        </button>
+        <button class="shortcut-card" onclick="showPage('localizacao')">
+          <span>📍</span><p>Localização</p>
+        </button>
+        <button class="shortcut-card" onclick="showPage('contatos')">
+          <span>📞</span><p>Contatos</p>
+        </button>
+      </div>
+    </section>
+
+    <section id="page-cadastro" class="page">
+      <header class="page-header">
+        <button onclick="showPage('home')" class="back-btn">← Voltar</button>
+        <h2>👤 Cadastro do Idoso</h2>
+      </header>
+
+      <div class="card">
+        <label class="field-label">Nome completo</label>
+        <input type="text" id="cad-nome" class="field-input" placeholder="Ex: Maria da Silva"/>
+
+        <label class="field-label">Idade</label>
+        <input type="number" id="cad-idade" class="field-input" placeholder="Ex: 72"/>
+
+        <label class="field-label">Condições de saúde</label>
+        <textarea id="cad-condicoes" class="field-input" placeholder="Ex: Hipertensão, diabetes tipo 2..."></textarea>
+
+        <label class="field-label">Medicamentos em uso</label>
+        <textarea id="cad-medicamentos" class="field-input" placeholder="Ex: Losartana 50mg, Metformina 500mg..."></textarea>
+
+        <label class="field-label">Observações gerais</label>
+        <textarea id="cad-obs" class="field-input" placeholder="Outras informações importantes..."></textarea>
+
+        <button onclick="salvarCadastro()" class="btn-primary">💾 Salvar Cadastro</button>
+      </div>
+
+      <div class="card hidden" id="cadastro-salvo">
+        <h3>✅ Dados Salvos</h3>
+        <div id="cadastro-display"></div>
+        <button onclick="editarCadastro()" class="btn-secondary">✏️ Editar</button>
+      </div>
+    </section>
+
+    <section id="page-contatos" class="page">
+      <header class="page-header">
+        <button onclick="showPage('home')" class="back-btn">← Voltar</button>
+        <h2>📞 Contatos de Emergência</h2>
+      </header>
+
+      <p class="hint-text center-text">Cadastre até 3 contatos de emergência.</p>
+
+      <div id="contatos-list"></div>
+
+      <div class="card" id="add-contato-form">
+        <h3>➕ Novo Contato</h3>
+
+        <label class="field-label">Nome</label>
+        <input type="text" id="ct-nome" class="field-input" placeholder="Ex: João Silva"/>
+
+        <label class="field-label">Telefone</label>
+        <input type="tel" id="ct-telefone" class="field-input" placeholder="Ex: (11) 99999-9999"/>
+
+        <label class="field-label">Parentesco</label>
+        <input type="text" id="ct-parentesco" class="field-input" placeholder="Ex: Filho, Neta, Vizinho..."/>
+
+        <button onclick="adicionarContato()" class="btn-primary">💾 Salvar Contato</button>
+      </div>
+    </section>
+
+    <section id="page-remedios" class="page">
+      <header class="page-header">
+        <button onclick="showPage('home')" class="back-btn">← Voltar</button>
+        <h2>💊 Lembretes de Remédios</h2>
+      </header>
+
+      <div id="remedios-list"></div>
+
+      <div class="card">
+        <h3>➕ Novo Remédio</h3>
+
+        <label class="field-label">Nome do remédio</label>
+        <input type="text" id="rem-nome" class="field-input" placeholder="Ex: Losartana"/>
+
+        <label class="field-label">Horário</label>
+        <input type="time" id="rem-horario" class="field-input"/>
+
+        <label class="field-label">Quantidade</label>
+        <input type="text" id="rem-qtd" class="field-input" placeholder="Ex: 1 comprimido, 10 gotas..."/>
+
+        <label class="field-label">Observação (opcional)</label>
+        <input type="text" id="rem-obs" class="field-input" placeholder="Ex: Tomar com água, em jejum..."/>
+
+        <button onclick="adicionarRemedio()" class="btn-primary">💾 Salvar Remédio</button>
+      </div>
+    </section>
+
+    <section id="page-saude" class="page">
+      <header class="page-header">
+        <h2>❤️ Monitoramento de Saúde</h2>
+      </header>
+
+      <div class="shortcuts-grid">
+        <button class="shortcut-card" onclick="showPage('pressao')">
+          <span>💉</span><p>Pressão Arterial</p>
+        </button>
+        <button class="shortcut-card" onclick="showPage('glicemia')">
+          <span>🩸</span><p>Glicemia</p>
+        </button>
+        <button class="shortcut-card" onclick="showPage('diario')">
+          <span>📝</span><p>Diário de Saúde</p>
+        </button>
+        <button class="shortcut-card" onclick="showPage('localizacao')">
+          <span>📍</span><p>Localização</p>
+        </button>
+      </div>
+    </section>
+
+    <section id="page-pressao" class="page">
+      <header class="page-header">
+        <button onclick="showPage('saude')" class="back-btn">← Voltar</button>
+        <h2>💉 Pressão Arterial</h2>
+      </header>
+
+      <div class="card">
+        <h3>📏 Registrar Medição</h3>
+
+        <label class="field-label">Pressão Máxima / Sistólica (mmHg)</label>
+        <input type="number" id="pr-max" class="field-input big-input" placeholder="Ex: 120"/>
+
+        <label class="field-label">Pressão Mínima / Diastólica (mmHg)</label>
+        <input type="number" id="pr-min" class="field-input big-input" placeholder="Ex: 80"/>
+
+        <p class="hint-text">📅 Data e hora registradas automaticamente.</p>
+        <button onclick="registrarPressao()" class="btn-primary">📊 Registrar</button>
+      </div>
+
+      <div class="card">
+        <h3>📌 Referência</h3>
+        <div class="history-item">✅ Normal: abaixo de 120/80</div>
+        <div class="history-item">⚠️ Atenção: 120–139 / 80–89</div>
+        <div class="history-item">🚨 Alta: 140/90 ou mais</div>
+      </div>
+
+      <div class="card">
+        <h3>📋 Histórico de Pressão</h3>
+        <div id="pressao-historico"></div>
+      </div>
+    </section>
+
+    <section id="page-glicemia" class="page">
+      <header class="page-header">
+        <button onclick="showPage('saude')" class="back-btn">← Voltar</button>
+        <h2>🩸 Controle de Glicemia</h2>
+      </header>
+
+      <div class="card">
+        <h3>📏 Registrar Medição</h3>
+
+        <label class="field-label">Valor da Glicemia (mg/dL)</label>
+        <input type="number" id="gl-valor" class="field-input big-input" placeholder="Ex: 100"/>
+
+        <label class="field-label">Observações</label>
+        <input type="text" id="gl-obs" class="field-input" placeholder="Ex: Em jejum, após refeição..."/>
+
+        <p class="hint-text">📅 Data e hora registradas automaticamente.</p>
+        <button onclick="registrarGlicemia()" class="btn-primary">📊 Registrar</button>
+      </div>
+
+      <div class="card">
+        <h3>📌 Referência (em jejum)</h3>
+        <div class="history-item">🚨 Hipoglicemia: abaixo de 70 mg/dL</div>
+        <div class="history-item">✅ Normal: 70–99 mg/dL</div>
+        <div class="history-item">⚠️ Pré-diabetes: 100–125 mg/dL</div>
+        <div class="history-item">🚨 Hiperglicemia: 126 mg/dL ou mais</div>
+      </div>
+
+      <div class="card">
+        <h3>📋 Histórico de Glicemia</h3>
+        <div id="glicemia-historico"></div>
+      </div>
+    </section>
+
+    <section id="page-diario" class="page">
+      <header class="page-header">
+        <button onclick="showPage('saude')" class="back-btn">← Voltar</button>
+        <h2>📝 Diário de Saúde</h2>
+      </header>
+
+      <div class="card">
+        <h3>Como você está hoje?</h3>
+
+        <label class="field-label">Humor do dia</label>
+        <div class="humor-selector" id="humor-selector">
+          <button class="humor-btn" data-humor="😄 Ótimo" onclick="selectHumor(this)">😄<br><small>Ótimo</small></button>
+          <button class="humor-btn" data-humor="🙂 Bem" onclick="selectHumor(this)">🙂<br><small>Bem</small></button>
+          <button class="humor-btn" data-humor="😐 Regular" onclick="selectHumor(this)">😐<br><small>Regular</small></button>
+          <button class="humor-btn" data-humor="😔 Mal" onclick="selectHumor(this)">😔<br><small>Mal</small></button>
+          <button class="humor-btn" data-humor="😣 Muito mal" onclick="selectHumor(this)">😣<br><small>Muito mal</small></button>
+        </div>
+
+        <label class="field-label">Sintomas</label>
+        <textarea id="diario-sintomas" class="field-input" placeholder="Ex: Dor de cabeça leve, cansaço..."></textarea>
+
+        <label class="field-label">Medicamentos tomados hoje</label>
+        <textarea id="diario-medicamentos" class="field-input" placeholder="Liste os remédios tomados hoje..."></textarea>
+
+        <label class="field-label">Observações</label>
+        <textarea id="diario-obs" class="field-input" placeholder="Qualquer outra anotação importante..."></textarea>
+
+        <p class="hint-text">📅 Data automática: <span id="diario-data"></span></p>
+        <button onclick="salvarDiario()" class="btn-primary">💾 Salvar Registro</button>
+      </div>
+
+      <div class="card">
+        <h3>📋 Registros Anteriores</h3>
+        <div id="diario-historico"></div>
+      </div>
+    </section>
+
+    <section id="page-localizacao" class="page">
+      <header class="page-header">
+        <button onclick="showPage('home')" class="back-btn">← Voltar</button>
+        <h2>📍 Localização e Segurança</h2>
+      </header>
+
+      <div class="card">
+        <h3>🗺️ Localização Atual</h3>
+        <p id="loc-status" class="hint-text">Clique para obter sua localização.</p>
+        <div id="loc-coords" class="loc-display hidden"></div>
+        <button onclick="obterLocalizacao()" class="btn-primary">📍 Obter Localização Atual</button>
+      </div>
+
+      <div class="card">
+        <h3>⏱️ Monitoramento de Atividade</h3>
+        <p class="hint-text">
+          O sistema verifica se a pessoa ficou mais de 2 horas sem interagir com o app durante o horário diurno (8h–22h).
+          Se detectar inatividade prolongada, um alerta é enviado aos contatos de emergência.
+        </p>
+        <div id="atividade-status" class="status-badge ok">
+          🟢 Atividade detectada recentemente
+        </div>
+        <p class="hint-text" id="ultimo-acesso"></p>
+        <button onclick="simularInatividade()" class="btn-secondary">🧪 Simular Inatividade (Demo)</button>
+      </div>
+    </section>
+
+    <section id="page-historico" class="page">
+      <header class="page-header">
+        <h2>📋 Histórico Geral</h2>
+      </header>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('tab-pressao', this)">💉 Pressão</button>
+        <button class="tab-btn" onclick="showTab('tab-glicemia', this)">🩸 Glicemia</button>
+        <button class="tab-btn" onclick="showTab('tab-diario-hist', this)">📝 Diário</button>
+        <button class="tab-btn" onclick="showTab('tab-alertas', this)">🚨 Alertas</button>
+      </div>
+
+      <div id="tab-pressao" class="tab-content active card">
+        <div id="hist-pressao"></div>
+      </div>
+
+      <div id="tab-glicemia" class="tab-content card" style="display:none">
+        <div id="hist-glicemia"></div>
+      </div>
+
+      <div id="tab-diario-hist" class="tab-content card" style="display:none">
+        <div id="hist-diario"></div>
+      </div>
+
+      <div id="tab-alertas" class="tab-content card" style="display:none">
+        <div id="hist-alertas"></div>
+      </div>
+
+      <div class="card">
+        <button onclick="limparHistorico()" class="btn-danger">🗑️ Limpar Todo Histórico</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+            </html>
